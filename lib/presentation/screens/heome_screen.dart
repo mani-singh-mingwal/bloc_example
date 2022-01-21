@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   state.connectionType == ConnectionType.mobile) {
                 return const Text("Mobile");
               } else if (state is InternetDisconnected) {
-                return const Text("Disconnected");
+                return const Text("Internet Disconnected");
               }
               return const CircularProgressIndicator();
             }),
