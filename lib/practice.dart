@@ -1,41 +1,28 @@
-import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
-enum CounterEvent { increment, decrement }
+class MyClass extends Equatable {
+  final int values;
 
-class CounterBloc extends Bloc<CounterEvent, int> {
-  CounterBloc(initialState) : super(0) {
-    on((event, emit) {
-      if (event is CounterEvent && event == CounterEvent.increment) {
-        emit(state + 1);
-      } else if (event is CounterEvent && event == CounterEvent.decrement) {
-        emit(state - 1);
-      }
-    });
-  }
+  MyClass(this.values);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MyClass &&
+          runtimeType == other.runtimeType &&
+          values == other.values;
+
+  @override
+  int get hashCode => values.hashCode;
+
+  @override
+  List<Object?> get props => [values];
 }
 
-void main(List<String> args) async {
-  final bloc = CounterBloc(0);
-  debugPrint("${bloc.state}");
+void main(List<String> args) {
+  final a = MyClass(1);
+  final b = MyClass(1);
 
-  final streamSubscription = bloc.stream.listen((data) {
-    debugPrint("data $data");
-  });
-
-  bloc.add(CounterEvent.increment);
-  debugPrint("${bloc.state}");
-
-  bloc.add(CounterEvent.increment);
-  debugPrint("${bloc.state}");
-
-  bloc.add(CounterEvent.increment);
-  debugPrint("${bloc.state}");
-
-  bloc.add(CounterEvent.decrement);
-  debugPrint("${bloc.state}");
-
-  await Future.delayed(Duration.zero);
-  await streamSubscription.cancel();
-  await bloc.close();
+  debugPrint("${a == b}");
 }

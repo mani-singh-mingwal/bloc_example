@@ -1,17 +1,26 @@
 import 'dart:async';
 
-import 'package:block_example_two/constants.dart';
+import 'package:block_example_two/logic/constants/enums.dart';
 import 'package:block_example_two/logic/cubit/internet_state.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class InternetCubit extends Cubit<InternetState> {
   final Connectivity connectivity;
-  late final StreamSubscription connectivityStreamSubscription;
+  late final StreamSubscription internetConnectionSubscription;
 
   InternetCubit(InternetState initialState, {required this.connectivity})
       : super(InternetLoading()) {
-    connectivityStreamSubscription = monitorInternetConnection();
+    internetConnectionSubscription =
+        connectivity.onConnectivityChanged.listen((connectivityResult) {
+      if (connectivityResult == ConnectivityResult.mobile) {
+        emitInternetConnected(ConnectionType.mobile);
+      } else if (connectivityResult == ConnectivityResult.wifi) {
+        emitInternetConnected(ConnectionType.wifi);
+      } else if (connectivityResult == ConnectivityResult.none) {
+        emitInternetDisconnected();
+      }
+    });
   }
 
   void emitInternetConnected(ConnectionType _connectionType) =>
@@ -21,19 +30,7 @@ class InternetCubit extends Cubit<InternetState> {
 
   @override
   Future<void> close() {
-    connectivityStreamSubscription.cancel();
+    internetConnectionSubscription.cancel();
     return super.close();
-  }
-
-  StreamSubscription<ConnectivityResult> monitorInternetConnection() {
-    return Connectivity().onConnectivityChanged.listen((connectionResult) {
-      if (connectionResult == ConnectivityResult.mobile) {
-        emitInternetConnected(ConnectionType.mobile);
-      } else if (connectionResult == ConnectivityResult.wifi) {
-        emitInternetConnected(ConnectionType.wifi);
-      } else if (connectionResult == ConnectivityResult.none) {
-        emitInternetDisconnected();
-      }
-    });
   }
 }

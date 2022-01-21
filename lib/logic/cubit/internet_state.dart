@@ -1,4 +1,4 @@
-import 'package:block_example_two/constants.dart';
+import 'package:block_example_two/logic/constants/enums.dart';
 
 abstract class InternetState {}
 

@@ -2,12 +2,19 @@ import 'package:block_example_two/logic/cubit/counter_cubit.dart';
 import 'package:block_example_two/logic/cubit/counter_state.dart';
 import 'package:block_example_two/logic/cubit/internet_cubit.dart';
 import 'package:block_example_two/logic/cubit/internet_state.dart';
+import 'package:block_example_two/logic/cubit/settings_cubit.dart';
+import 'package:block_example_two/logic/cubit/settings_state.dart';
 import 'package:block_example_two/presentation/router.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final storage = await HydratedStorage.build(
+      storageDirectory: await getApplicationDocumentsDirectory());
   runApp(MyApp(
     appRoute: AppRoute(),
     connectivity: Connectivity(),
@@ -24,12 +31,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<InternetCubit>(
+          create: (context) =>
+              InternetCubit(InternetLoading(), connectivity: connectivity),
+        ),
         BlocProvider(
-            create: (context) =>
-                InternetCubit(InternetLoading(), connectivity: Connectivity())),
+            create: (context) => CounterCubit(
+                  CounterState(counterValue: 0),
+                )),
         BlocProvider(
-            create: (context) => CounterCubit(CounterState(counterValue: 0),
-                internetCubit: BlocProvider.of<InternetCubit>(context)))
+            create: (context) => SettingsCubit(SettingsState(
+                appNotifications: false, emailNotifications: false)))
       ],
       child: MaterialApp(
         title: "Flutter Demo",

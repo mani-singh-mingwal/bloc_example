@@ -1,5 +1,6 @@
-import 'package:block_example_two/presentation/screens/heome_screen.dart';
+import 'package:block_example_two/presentation/screens/home_screen.dart';
 import 'package:block_example_two/presentation/screens/second_screen.dart';
+import 'package:block_example_two/presentation/screens/settings_screen.dart';
 import 'package:block_example_two/presentation/screens/third_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,10 @@ class AppRoute {
         return MaterialPageRoute(
             builder: (_) => const ThirdScreen(
                 title: "Third Screen", color: Colors.greenAccent));
-
+      case "/settingsScreen":
+        return MaterialPageRoute(builder: (_) {
+          return const SettingsScreen(title: "Settings Screen");
+        });
       default:
         return null;
       // return MaterialPageRoute(
