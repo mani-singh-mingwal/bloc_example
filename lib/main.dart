@@ -1,3 +1,4 @@
+import 'package:block_example_two/app_bloc_observer.dart';
 import 'package:block_example_two/logic/cubit/counter_cubit.dart';
 import 'package:block_example_two/logic/cubit/counter_state.dart';
 import 'package:block_example_two/logic/cubit/internet_cubit.dart';
@@ -13,12 +14,18 @@ import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory());
-  runApp(MyApp(
-    appRoute: AppRoute(),
-    connectivity: Connectivity(),
-  ));
+
+  BlocOverrides.runZoned(
+      () => HydratedBlocOverrides.runZoned(
+          () => runApp(MyApp(
+                appRoute: AppRoute(),
+                connectivity: Connectivity(),
+              )),
+          storage: storage),
+      blocObserver: AppBlocObserver());
 }
 
 class MyApp extends StatelessWidget {
@@ -40,7 +47,7 @@ class MyApp extends StatelessWidget {
                   CounterState(counterValue: 0),
                 )),
         BlocProvider(
-            create: (context) => SettingsCubit(SettingsState(
+            create: (context) => SettingsCubit(const SettingsState(
                 appNotifications: false, emailNotifications: false)))
       ],
       child: MaterialApp(
